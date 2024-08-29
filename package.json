@@ -4,7 +4,7 @@
   "description": "Technical challenge of Shopper job recruitment",
   "main": "index.ts",
   "scripts": {
-    "test": "node --import=tsx --test ./**/*.test.*",
+    "test": "node --import=tsx --test ./src/modules/**/*.test.ts",
     "dev": "nodemon src/index.ts"
   },
   "repository": {
