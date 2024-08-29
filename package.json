@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "node --import=tsx --test ./src/modules/**/*.test.ts",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon --exec node -r ts-node/register --env-file=.env ./src/index.ts"
   },
   "repository": {
     "type": "git",
