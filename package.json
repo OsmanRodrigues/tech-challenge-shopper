@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/OsmanRodrigues/tech-challenge-shopper#readme",
   "dependencies": {
+    "@google/generative-ai": "^0.17.1",
     "express": "^4.19.2"
   },
   "devDependencies": {
