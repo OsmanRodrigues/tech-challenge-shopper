@@ -1,0 +1,24 @@
+services:
+  web-api:
+    restart: on-failure
+    build: .
+    hostname: web-api
+    environment:
+      PORT: 5000
+    command: 
+      - npm
+      - run
+      - dev
+    volumes:
+      - .:/web-api
+      - node_modules:/web-api/node_modules
+    ports:
+      - 81:5000
+  nginx:
+    build: ./nginx
+    ports:
+    - 80:80
+    depends_on:
+    - web-api
+volumes:
+  node_modules: {}
