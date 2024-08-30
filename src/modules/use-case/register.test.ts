@@ -15,8 +15,8 @@ const base64Mock = fs.readFileSync('test-sample-base64', 'utf8');
 const registerRequestPayloadMock: MeasureRegisterRequestDTO = {
   customer_code: '12345',
   image: base64Mock,
-  measure_datetime: '2024-08-29T00:09:52.312315Z',
-  measure_type: 'GAS',
+  measure_datetime: '2024-05-29T00:09:52.312315Z',
+  measure_type: 'WATER',
 };
 
 describe('Use case: register measure', undefined, () => {
@@ -25,17 +25,16 @@ describe('Use case: register measure', undefined, () => {
     startAIServices();
   });
 
-  // NOTE uncomment this block after excpetion cases are covered
-  // it('Should register a measure', async () => {
-  //   const registerResponse = await registerMeasureUseCase(
-  //     registerRequestPayloadMock
-  //   );
+  it('Should register a measure', async () => {
+    const registerResponse = await registerMeasureUseCase(
+      registerRequestPayloadMock
+    );
 
-  //   assert.ok(registerResponse);
-  //   assert.ok(registerResponse.image_url);
-  //   assert.ok(registerResponse.measure_uuid);
-  //   assert.ok(registerResponse.measure_value);
-  // });
+    assert.ok(registerResponse);
+    assert.ok(registerResponse.image_url);
+    assert.ok(registerResponse.measure_uuid);
+    assert.ok(registerResponse.measure_value);
+  });
   it('Should throw invalid data error once request payload has wrong data', async () => {
     const wrongDataPayload = {
       customer_code: 12345,
@@ -55,7 +54,6 @@ describe('Use case: register measure', undefined, () => {
   });
   it('Should throw double report error once already exist a measure for the current month', async () => {
     try {
-      console.log(registerRequestPayloadMock.image.slice(0, 64));
       const registerResponse = await registerMeasureUseCase(
         registerRequestPayloadMock
       );
