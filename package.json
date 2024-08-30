@@ -4,8 +4,9 @@
   "description": "Technical challenge of Shopper job recruitment",
   "main": "index.ts",
   "scripts": {
-    "test": "node --env-file=.env --import=tsx --test ./src/modules/**/*.test.ts",
-    "dev": "nodemon --exec node -r ts-node/register --env-file=.env ./src/index.ts"
+    "test": "npm run check:types && node --env-file=.env --import=tsx --test ./src/modules/**/*.test.ts",
+    "dev": "npm run check:types && nodemon --exec node -r ts-node/register --env-file=.env ./src/index.ts",
+    "check:types": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
