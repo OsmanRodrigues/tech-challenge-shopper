@@ -16,7 +16,7 @@ const registerRequestPayloadMock: MeasureRegisterRequestDTO = {
   customer_code: '12345',
   image: base64Mock,
   measure_datetime: '2024-08-29T00:09:52.312315Z',
-  measure_type: 'WATER',
+  measure_type: 'GAS',
 };
 
 describe('Use case: register measure', undefined, () => {

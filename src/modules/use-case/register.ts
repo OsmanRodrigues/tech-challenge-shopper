@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { setDBItem, uploadFile } from '../external/storage';
+import { getDBRecordByParam, setDBItem, uploadFile } from '../external/storage';
 import { genContent } from '../external/ai';
 import { getMeasurePrompt } from '../../shared/prompts';
 import { genCustomError } from '../../shared/utils/error.utils';
@@ -17,6 +17,23 @@ export const registerMeasureUseCase = async (
   data: MeasureRegisterRequestDTO
 ): Promise<MeasureRegisterResponseDTO> => {
   registerValidator(data);
+
+  const dbSearchRes = getDBRecordByParam<MeasureRecord>([
+    {
+      paramName: 'collectedAt',
+      paramValue: new Date(data.measure_datetime).getMonth(),
+      recordValueTransformer: (recordValue) => new Date(recordValue).getMonth(),
+    },
+    { paramName: 'type', paramValue: data.measure_type },
+  ]);
+
+  if (!!dbSearchRes.length && !!dbSearchRes[0].id) {
+    throw genCustomError(
+      'DOUBLE_REPORT',
+      'Já existe uma leitura para este tipo no mês atual.',
+      409
+    );
+  }
 
   const measureGUID = randomUUID();
   const fileUploadRes = await uploadFile(

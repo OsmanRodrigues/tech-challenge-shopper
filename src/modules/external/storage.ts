@@ -66,6 +66,36 @@ export const getDBItem = (key: string | number) => {
 
   return db?.[key];
 };
+export const getDBRecordByParam = <DBRecord = Record<string, any>>(
+  params: {
+    paramName: keyof DBRecord | number;
+    paramValue: any;
+    recordValueTransformer?: (recordValue: any) => any;
+  }[]
+): any[] => {
+  if (db === null) {
+    startStorageServices();
+  }
+
+  const dbRecords = Object.values(db!);
+
+  if (dbRecords.length) {
+    return dbRecords.filter((record) =>
+      params.every((param) => {
+        const recordValue = record?.[param.paramName];
+
+        return (
+          !!recordValue &&
+          (!!param.recordValueTransformer
+            ? param.recordValueTransformer(recordValue) === param.paramValue
+            : recordValue === param.paramValue)
+        );
+      })
+    );
+  }
+
+  return [];
+};
 export const uploadFile = async (
   base64File: string,
   displayName: FileMetadataResponse['displayName'],
