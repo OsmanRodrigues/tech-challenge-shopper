@@ -1,4 +1,4 @@
-import type { FileMetadataResponse } from '@google/generative-ai/dist/server/server';
+import { FileMetadataResponse } from '@google/generative-ai/server';
 
 export enum MeasureType {
   WATER = 'WATER',

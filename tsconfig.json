@@ -1,10 +1,20 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "sourceMap": true,
+    "baseUrl": "./",
     "outDir": "dist",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "NodeNext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": true,
+    "target": "ES5",
+    "typeRoots": ["node_modules/@types"],
     "strict": true,
-    "lib": ["esnext"],
+    "lib": ["ES2021"],
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext"
   }
 }
