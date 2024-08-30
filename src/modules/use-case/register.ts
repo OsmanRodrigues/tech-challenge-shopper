@@ -57,12 +57,15 @@ export const registerMeasureUseCase = async (
     measure_value: dbRes.value!,
   };
 };
-export const registerHandler: RequestHandler = async (req, res) => {
+export const registerHandler: RequestHandler = async (req, res, next) => {
   const { body } = req;
 
-  const useCaseRes = await registerMeasureUseCase(body);
-
-  res.send(useCaseRes);
+  try {
+    const useCaseRes = await registerMeasureUseCase(body);
+    res.send(useCaseRes);
+  } catch (err) {
+    next(err);
+  }
 };
 const registerValidator = (data: MeasureRegisterRequestDTO) => {
   try {
