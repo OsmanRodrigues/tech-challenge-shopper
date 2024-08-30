@@ -6,7 +6,9 @@ import { startStorageServices } from '../external/storage';
 import { startAIServices } from '../external/ai';
 import fs from 'node:fs';
 
-const base64Mock = fs.readFileSync('test-sample.jpg', 'base64');
+//NOTE comment test image file or base64 for select base64 mock consume
+// const base64Mock = fs.readFileSync('test-sample.jpeg', 'base64');
+const base64Mock = fs.readFileSync('test-sample-base64', 'utf8');
 
 describe('Use case: register measure', undefined, () => {
   before(() => {
@@ -16,10 +18,10 @@ describe('Use case: register measure', undefined, () => {
 
   it('Should register a measure', async () => {
     const registerRequestPayload: MeasureRegisterRequestDTO = {
-      customer_code: '1234',
+      customer_code: '12345',
       image: base64Mock,
       measure_datetime: '2024-08-29T00:09:52.312315Z',
-      measure_type: 'GAS',
+      measure_type: 'WATER',
     };
     const registerResponse = await registerMeasureUseCase(
       registerRequestPayload

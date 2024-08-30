@@ -93,7 +93,7 @@ export const getFile = async (fileName: string) => {
   return getResponse;
 };
 //helpers
-const genTempFileFromBase64 = (
+export const genTempFileFromBase64 = (
   base64File: string,
   guid: string
 ): { path: string; mimeType: keyof typeof FileMIMEType } => {
@@ -109,7 +109,13 @@ const genTempFileFromBase64 = (
       : FileMIMEType['image/jpeg'];
     const fileExtension = mimeType.split('/')[1];
     const tempFilePath = `temp-file-[${guid}].${fileExtension}`;
-    const base64ToBuffer = Buffer.from(base64File, 'base64');
+    const base64HeaderParam = `base64,`;
+    const base64FileWithNoHeader = !!base64File.match(
+      new RegExp(base64HeaderParam)
+    )
+      ? base64File.split(base64HeaderParam)[1].trimStart()
+      : base64File;
+    const base64ToBuffer = Buffer.from(base64FileWithNoHeader, 'base64');
 
     fs.writeFileSync(tempFilePath, base64ToBuffer);
 

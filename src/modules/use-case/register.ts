@@ -1,12 +1,14 @@
 import { randomUUID } from 'node:crypto';
+import { setDBItem, uploadFile } from '../external/storage';
+import { genContent } from '../external/ai';
+import { getMeasurePrompt } from '../../shared/prompts';
+
+import type { MeasureRecord } from '../model/measure.entity';
 import type {
   MeasureRegisterRequestDTO,
   MeasureRegisterResponseDTO,
 } from '../model/dto';
-import { MeasureRecord } from '../model/measure.entity';
-import { setDBItem, uploadFile } from '../external/storage';
-import { genContent } from '../external/ai';
-import { getMeasurePrompt } from '../../shared/prompts';
+import type { RequestHandler } from 'express';
 
 export const registerMeasureUseCase = async (
   data: MeasureRegisterRequestDTO
@@ -48,4 +50,11 @@ export const registerMeasureUseCase = async (
     measure_uuid: dbRes.id,
     measure_value: dbRes.value!,
   };
+};
+export const registerHandler: RequestHandler = async (req, res) => {
+  const { body } = req;
+
+  const useCaseRes = await registerMeasureUseCase(body);
+
+  res.send(useCaseRes);
 };
