@@ -12,6 +12,13 @@ import type { MeasureRegisterRequestDTO } from '../model/dto';
 // const base64Mock = fs.readFileSync('test-sample.jpeg', 'base64');
 const base64Mock = fs.readFileSync('test-sample-base64', 'utf8');
 
+const registerRequestPayloadMock: MeasureRegisterRequestDTO = {
+  customer_code: '12345',
+  image: base64Mock,
+  measure_datetime: '2024-08-29T00:09:52.312315Z',
+  measure_type: 'WATER',
+};
+
 describe('Use case: register measure', undefined, () => {
   before(() => {
     startStorageServices();
@@ -20,14 +27,8 @@ describe('Use case: register measure', undefined, () => {
 
   // NOTE uncomment this block after excpetion cases are covered
   // it('Should register a measure', async () => {
-  //   const registerRequestPayload: MeasureRegisterRequestDTO = {
-  //     customer_code: '12345',
-  //     image: base64Mock,
-  //     measure_datetime: '2024-08-29T00:09:52.312315Z',
-  //     measure_type: 'WATER',
-  //   };
   //   const registerResponse = await registerMeasureUseCase(
-  //     registerRequestPayload
+  //     registerRequestPayloadMock
   //   );
 
   //   assert.ok(registerResponse);
@@ -52,7 +53,16 @@ describe('Use case: register measure', undefined, () => {
       assert.ok(err.error_description);
     }
   });
-  todo(
-    'Should throw double report error once already exist a measure for the current month'
-  );
+  it('Should throw double report error once already exist a measure for the current month', async () => {
+    try {
+      console.log(registerRequestPayloadMock.image.slice(0, 64));
+      const registerResponse = await registerMeasureUseCase(
+        registerRequestPayloadMock
+      );
+    } catch (err: any) {
+      assert.deepStrictEqual(err.status, 409);
+      assert.deepStrictEqual(err.error_code, ErrorCode.DOUBLE_REPORT);
+      assert.ok(err.error_description);
+    }
+  });
 });
