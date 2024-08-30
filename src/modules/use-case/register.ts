@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { setDBItem, uploadFile } from '../external/storage';
 import { genContent } from '../external/ai';
 import { getMeasurePrompt } from '../../shared/prompts';
+import { genCustomError } from '../../shared/utils/error.utils';
 
 import type { MeasureRecord } from '../model/measure.entity';
 import type {
@@ -41,8 +42,10 @@ export const registerMeasureUseCase = async (
   const dbRes = await setDBItem<MeasureRecord>(measureGUID, measureRecord);
 
   if (dbRes === null)
-    throw new Error(
-      'Cannot proceed with measure register. Database write service failed.'
+    throw genCustomError(
+      'EXPECTATION_FAILED',
+      'Não foi possível realizar o registro da medição. Ocorreu uma falha no serviço de banco de dados.',
+      417
     );
 
   return {
