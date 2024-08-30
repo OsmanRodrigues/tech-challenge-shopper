@@ -3,6 +3,7 @@ import { setDBItem, uploadFile } from '../external/storage';
 import { genContent } from '../external/ai';
 import { getMeasurePrompt } from '../../shared/prompts';
 import { genCustomError } from '../../shared/utils/error.utils';
+import { FileMIMEType } from '../../shared/constants';
 import { z, type ZodError } from 'zod';
 
 import { MeasureType, type MeasureRecord } from '../model/measure.entity';
@@ -70,7 +71,18 @@ export const registerHandler: RequestHandler = async (req, res, next) => {
 const registerValidator = (data: MeasureRegisterRequestDTO) => {
   try {
     const measureSchema = z.object({
-      image: z.string().base64(),
+      image: z.union([
+        z
+          .string()
+          .regex(
+            new RegExp(
+              `data:(${Object.keys(FileMIMEType)
+                .toString()
+                .replaceAll(',', '|')});base64,`
+            )
+          ),
+        z.string().base64(),
+      ]),
       customer_code: z.string().min(1),
       measure_datetime: z.string().datetime(),
       measure_type: z.nativeEnum(MeasureType),
