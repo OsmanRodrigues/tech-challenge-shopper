@@ -1,6 +1,5 @@
 import {
   FileData,
-  type GenerativeContentBlob,
   GenerativeModel,
   GoogleGenerativeAI,
 } from '@google/generative-ai';

@@ -1,0 +1,5 @@
+/node_modules
+/rest-client
+/dist
+db.json
+temp-file*
