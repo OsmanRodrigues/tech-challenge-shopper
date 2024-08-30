@@ -5,6 +5,7 @@ import { MeasureRegisterRequestDTO } from '../model/dto';
 import { registerMeasureUseCase } from './register';
 import { startStorageServices } from '../external/storage';
 import { startAIServices } from '../external/ai';
+import { ErrorCode } from '../../shared/constants';
 
 //NOTE comment test image file or base64 for select base64 mock consume
 // const base64Mock = fs.readFileSync('test-sample.jpeg', 'base64');
@@ -33,7 +34,20 @@ describe('Use case: register measure', undefined, () => {
   //   assert.ok(registerResponse.measure_uuid);
   //   assert.ok(registerResponse.measure_value);
   // });
-  todo('Should throw invalid data error once request payload has wrong data');
+  it('Should throw invalid data error once request payload has wrong data', async () => {
+    const wrongDataPayload = {
+      customer_code: 12345,
+      image: null,
+      measure_datetime: '29/08/2024',
+      measure_type: 'agua',
+    };
+    const registerResponse: any = await registerMeasureUseCase(
+      wrongDataPayload as any
+    );
+
+    assert.deepStrictEqual(registerResponse.error_code, ErrorCode.INVALID_DATA);
+    assert.deepStrictEqual(registerResponse.status, 417);
+  });
   todo(
     'Should throw double report error once already exist a measure for the current month'
   );
