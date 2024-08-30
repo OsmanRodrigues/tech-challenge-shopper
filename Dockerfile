@@ -1,13 +1,14 @@
-FROM node:20-slim
+FROM node:20-alpine
 
 WORKDIR /web-api/
 
-COPY package*.json ./
+COPY . .
 
-RUN npm ci --silent
+RUN npm install
+RUN npm run build
 
 COPY . .
 
-USER node
+EXPOSE 5000
 
-CMD npm run dev
+CMD npm start

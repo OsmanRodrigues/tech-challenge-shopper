@@ -1,3 +1,7 @@
+# Other
+db.json
+temp-file*
+rest-client*
 # Logs
 logs
 *.log
