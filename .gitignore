@@ -1,5 +1,6 @@
 # Other
 db.json
+temp-file*
 # Logs
 logs
 *.log

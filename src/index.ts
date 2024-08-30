@@ -1,7 +1,9 @@
 import express from 'express';
 import { startStorageServices } from './modules/external/storage';
+import { startAIServices } from './modules/external/ai';
 
 startStorageServices();
+startAIServices();
 
 const app = express();
 const port = 5000;

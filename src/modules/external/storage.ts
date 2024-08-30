@@ -3,8 +3,14 @@ import {
   GoogleAIFileManager,
   FileMetadataResponse,
 } from '@google/generative-ai/server';
+import { googleAIStudioAPIKey } from '../../shared/configs';
+import { FileMIMEType } from '../../shared/constants';
 
-const fileManagerKey = process.env?.GEMINI_API_KEY;
+if (!googleAIStudioAPIKey) {
+  throw new Error('File manager API key not provided.');
+}
+
+const fileManagerKey = googleAIStudioAPIKey;
 const dbFileName = 'db.json';
 export let fileManager: GoogleAIFileManager | null = null;
 export let db: Record<string, any> | null = null;
@@ -22,19 +28,32 @@ export const startStorageServices = () => {
   }
 
   if (fileManager === null) {
-    if (!fileManagerKey) throw new Error('File manager API key not provided.');
+    if (!fileManagerKey) {
+      throw new Error('Cannot start storage service. API Key not provided.');
+    }
 
     fileManager = new GoogleAIFileManager(fileManagerKey);
   }
 };
-export const setDBItem = (key: string, value: any) => {
+export const setDBItem = async <Value = any>(
+  key: string,
+  value: Value
+): Promise<Value | null> => {
   if (db === null) startStorageServices();
 
   if (typeof db === 'object') {
     db![key] = value;
     fs.writeFileSync(dbFileName, JSON.stringify(db));
     db = JSON.parse(fs.readFileSync(dbFileName).toString());
+
+    const dbRecord = db![key];
+
+    console.log(`> [Database] registered item ${dbRecord.id}`);
+
+    return dbRecord;
   }
+
+  return null;
 };
 export const getDBItem = (key: string | number) => {
   if (db === null) {
@@ -48,22 +67,21 @@ export const getDBItem = (key: string | number) => {
   return db?.[key];
 };
 export const uploadFile = async (
-  filePath: string,
-  mimeType: FileMetadataResponse['mimeType'],
-  displayName: FileMetadataResponse['displayName']
+  base64File: string,
+  displayName: FileMetadataResponse['displayName'],
+  guid: string
 ) => {
   if (fileManager === null) startStorageServices();
 
-  const uploadResponse = await fileManager!.uploadFile(filePath, {
-    mimeType,
+  const tempFile = genTempFileFromBase64(base64File, guid);
+  const uploadResponse = await fileManager!.uploadFile(tempFile.path, {
+    mimeType: tempFile.mimeType,
     displayName,
   });
 
   console.log(
-    `> Uploaded file ${uploadResponse.file.displayName} as: ${uploadResponse.file.uri}`
+    `> [File manager] Uploaded file ${uploadResponse.file.displayName} as: ${uploadResponse.file.uri}`
   );
-
-  setDBItem(uploadResponse.file.name, { ...uploadResponse.file });
 
   return uploadResponse;
 };
@@ -73,4 +91,33 @@ export const getFile = async (fileName: string) => {
   const getResponse = await fileManager!.getFile(fileName);
 
   return getResponse;
+};
+//helpers
+const genTempFileFromBase64 = (
+  base64File: string,
+  guid: string
+): { path: string; mimeType: keyof typeof FileMIMEType } => {
+  try {
+    const mimeTypeStartParam = ':';
+    const mimeTypeEndParam = ';';
+    const match1 = base64File.match(
+      new RegExp(`\\${mimeTypeStartParam}[a-z]*\/[a-z]*\\${mimeTypeEndParam}`)
+    );
+    const match2 = match1?.[0]?.match?.(new RegExp('[a-z]*/[a-z]*'));
+    const mimeType = match2?.length
+      ? (match2[0] as keyof typeof FileMIMEType)
+      : FileMIMEType['image/jpeg'];
+    const fileExtension = mimeType.split('/')[1];
+    const tempFilePath = `temp-file-[${guid}].${fileExtension}`;
+    const base64ToBuffer = Buffer.from(base64File, 'base64');
+
+    fs.writeFileSync(tempFilePath, base64ToBuffer);
+
+    return {
+      path: tempFilePath,
+      mimeType,
+    };
+  } catch (err) {
+    throw err;
+  }
 };
