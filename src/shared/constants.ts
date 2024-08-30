@@ -5,3 +5,8 @@ export enum FileMIMEType {
   'image/heic' = 'image/heic',
   'image/heif' = 'image/heif',
 }
+export enum ErrorCode {
+  INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
+  INVALID_DATA = 'INVALID_DATA',
+  DOUBLE_REPORT = 'DOUBLE_REPORT',
+}
