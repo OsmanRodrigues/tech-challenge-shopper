@@ -1,9 +1,12 @@
 import type { FileMetadataResponse } from '@google/generative-ai/dist/server/server';
 
-type MeasureType = 'WATER' | 'GAS';
+export enum MeasureType {
+  WATER = 'WATER',
+  GAS = 'GAS',
+}
 type MeasureEntity = {
   id: string;
-  type: MeasureType;
+  type: keyof typeof MeasureType;
   value?: number;
 };
 export type MeasureValueStatus = 'INVALID' | 'VALID';

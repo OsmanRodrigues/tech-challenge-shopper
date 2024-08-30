@@ -3,8 +3,9 @@ import { setDBItem, uploadFile } from '../external/storage';
 import { genContent } from '../external/ai';
 import { getMeasurePrompt } from '../../shared/prompts';
 import { genCustomError } from '../../shared/utils/error.utils';
+import { z, type ZodError } from 'zod';
 
-import type { MeasureRecord } from '../model/measure.entity';
+import { MeasureType, type MeasureRecord } from '../model/measure.entity';
 import type {
   MeasureRegisterRequestDTO,
   MeasureRegisterResponseDTO,
@@ -14,6 +15,8 @@ import type { RequestHandler } from 'express';
 export const registerMeasureUseCase = async (
   data: MeasureRegisterRequestDTO
 ): Promise<MeasureRegisterResponseDTO> => {
+  registerValidator(data);
+
   const measureGUID = randomUUID();
   const fileUploadRes = await uploadFile(
     data.image,
@@ -60,4 +63,24 @@ export const registerHandler: RequestHandler = async (req, res) => {
   const useCaseRes = await registerMeasureUseCase(body);
 
   res.send(useCaseRes);
+};
+const registerValidator = (data: MeasureRegisterRequestDTO) => {
+  try {
+    const measureSchema = z.object({
+      image: z.string().base64(),
+      customer_code: z.string().min(1),
+      measure_datetime: z.string().datetime(),
+      measure_type: z.nativeEnum(MeasureType),
+    });
+    measureSchema.parse(data);
+  } catch (err) {
+    const typedError = err as ZodError;
+
+    throw genCustomError(
+      'INVALID_DATA',
+      'Os dados fornecidos no corpo da requisição são inválidos.',
+      400,
+      typedError.issues
+    );
+  }
 };
