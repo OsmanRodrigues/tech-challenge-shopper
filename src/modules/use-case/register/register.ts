@@ -1,17 +1,21 @@
 import { randomUUID } from 'node:crypto';
-import { getDBRecordByParam, setDBItem, uploadFile } from '../external/storage';
-import { genContent } from '../external/ai';
-import { getMeasurePrompt } from '../../shared/prompts';
-import { genCustomError } from '../../shared/utils/error.utils';
-import { FileMIMEType } from '../../shared/constants';
+import {
+  getDBRecordByParam,
+  setDBRecord,
+  uploadFile,
+} from '../../external/storage';
+import { genContent } from '../../external/ai';
+import { getMeasurePrompt } from '../../../shared/prompts';
+import { genCustomError } from '../../../shared/utils/error.utils';
+import { FileMIMEType } from '../../../shared/constants';
 import { z, type ZodError } from 'zod';
+import { requestHandlerWrapper } from '../../../shared/utils/request-handler.utils';
 
-import { MeasureType, type MeasureRecord } from '../model/measure.entity';
+import { MeasureType, type MeasureRecord } from '../../model/measure.entity';
 import type {
   MeasureRegisterRequestDTO,
   MeasureRegisterResponseDTO,
-} from '../model/dto';
-import type { RequestHandler } from 'express';
+} from '../../model/dto';
 
 export const registerMeasureUseCase = async (
   data: MeasureRegisterRequestDTO
@@ -60,7 +64,7 @@ export const registerMeasureUseCase = async (
       uri: fileUploadRes.file.uri,
     },
   };
-  const dbRes = await setDBItem<MeasureRecord>(measureGUID, measureRecord);
+  const dbRes = await setDBRecord<MeasureRecord>(measureGUID, measureRecord);
 
   if (dbRes === null)
     throw genCustomError(
@@ -75,16 +79,9 @@ export const registerMeasureUseCase = async (
     measure_value: dbRes.value!,
   };
 };
-export const registerHandler: RequestHandler = async (req, res, next) => {
-  const { body } = req;
-
-  try {
-    const useCaseRes = await registerMeasureUseCase(body);
-    res.send(useCaseRes);
-  } catch (err) {
-    next(err);
-  }
-};
+export const registerHandler = requestHandlerWrapper(registerMeasureUseCase, {
+  withBody: true,
+});
 const registerValidator = (data: MeasureRegisterRequestDTO) => {
   try {
     const measureSchema = z.object({

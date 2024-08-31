@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "node --env-file=.env ./dist/index.js",
-    "test": "npm run check:types && node --env-file=.env --import=tsx --test ./src/modules/**/*.test.ts",
+    "test": "npm run check:types && node --env-file=.env --import=tsx --test ./src/modules/use-case/**/*.test.ts",
     "dev": "npm run check:types && nodemon --exec node -r ts-node/register --env-file=.env ./src/index.ts",
     "check:types": "tsc --noEmit",
     "minify": "jsmin -o ./dist/index.js ./dist/index.js",

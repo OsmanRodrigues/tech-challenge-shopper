@@ -11,3 +11,12 @@ export type MeasureRegisterResponseDTO = {
   measure_value: number;
   measure_uuid: string;
 };
+export type VerifyMeasureRequestDTO = Pick<
+  MeasureRegisterResponseDTO,
+  'measure_uuid'
+> & {
+  confirmed_value: number;
+};
+export type VerifyMeasureResponseDTO = {
+  success: boolean;
+};

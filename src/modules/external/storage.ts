@@ -35,27 +35,31 @@ export const startStorageServices = () => {
     fileManager = new GoogleAIFileManager(fileManagerKey);
   }
 };
-export const setDBItem = async <Value = any>(
+export const setDBRecord = async <Value = any>(
   key: string,
   value: Value
 ): Promise<Value | null> => {
   if (db === null) startStorageServices();
 
   if (typeof db === 'object') {
+    let logMessageFallback = 'registered';
+
+    if (!!db![key]) logMessageFallback = 'updated';
+
     db![key] = value;
     fs.writeFileSync(dbFileName, JSON.stringify(db));
     db = JSON.parse(fs.readFileSync(dbFileName).toString());
 
     const dbRecord = db![key];
 
-    console.log(`> [Database] registered item ${dbRecord.id}`);
+    console.log(`> [Database] ${logMessageFallback} record ${dbRecord.id}`);
 
     return dbRecord;
   }
 
   return null;
 };
-export const getDBItem = (key: string | number) => {
+export const getDBRecord = <DBRecord = any>(key: string | number): DBRecord => {
   if (db === null) {
     startStorageServices();
   }
@@ -72,7 +76,7 @@ export const getDBRecordByParam = <DBRecord = Record<string, any>>(
     paramValue: any;
     recordValueTransformer?: (recordValue: any) => any;
   }[]
-): any[] => {
+): DBRecord[] => {
   if (db === null) {
     startStorageServices();
   }
