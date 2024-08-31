@@ -66,7 +66,7 @@ export const listRequestHandler = requestHandlerWrapper(listMeasuresUseCase, {
 const listValidator = (data: ListMeasureRequestDTO) => {
   try {
     const listRequestSchema = z.object({
-      measure_type: z.nativeEnum(MeasureType),
+      measure_type: z.nativeEnum(MeasureType).optional(),
     });
     listRequestSchema.parse(data);
   } catch (err) {
