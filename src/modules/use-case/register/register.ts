@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   getDBRecordByParam,
-  setDBItem,
+  setDBRecord,
   uploadFile,
 } from '../../external/storage';
 import { genContent } from '../../external/ai';
@@ -64,7 +64,7 @@ export const registerMeasureUseCase = async (
       uri: fileUploadRes.file.uri,
     },
   };
-  const dbRes = await setDBItem<MeasureRecord>(measureGUID, measureRecord);
+  const dbRes = await setDBRecord<MeasureRecord>(measureGUID, measureRecord);
 
   if (dbRes === null)
     throw genCustomError(

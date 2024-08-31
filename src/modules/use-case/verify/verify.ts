@@ -5,9 +5,9 @@ import type {
 } from '../../model/dto';
 import { z, type ZodError } from 'zod';
 import {
-  getDBItem,
+  getDBRecord,
   getDBRecordByParam,
-  setDBItem,
+  setDBRecord,
 } from 'src/modules/external/storage';
 import { MeasureRecord } from 'src/modules/model/measure.entity';
 
@@ -16,7 +16,7 @@ export const verifyMeasureUseCase = async (
 ): Promise<VerifyMeasureResponseDTO> => {
   verifyValidator(data);
 
-  const measureRecord = getDBItem<MeasureRecord>(data.measure_uuid);
+  const measureRecord = getDBRecord<MeasureRecord>(data.measure_uuid);
 
   if (
     !measureRecord.measureValueStatus ||
@@ -26,7 +26,7 @@ export const verifyMeasureUseCase = async (
       measureRecord.value = data.confirmed_value;
 
     measureRecord.measureValueStatus = 'VALID';
-    await setDBItem(measureRecord.id, measureRecord);
+    await setDBRecord(measureRecord.id, measureRecord);
   }
 
   return {

@@ -35,7 +35,7 @@ export const startStorageServices = () => {
     fileManager = new GoogleAIFileManager(fileManagerKey);
   }
 };
-export const setDBItem = async <Value = any>(
+export const setDBRecord = async <Value = any>(
   key: string,
   value: Value
 ): Promise<Value | null> => {
@@ -59,7 +59,7 @@ export const setDBItem = async <Value = any>(
 
   return null;
 };
-export const getDBItem = <DBRecord = any>(key: string | number): DBRecord => {
+export const getDBRecord = <DBRecord = any>(key: string | number): DBRecord => {
   if (db === null) {
     startStorageServices();
   }
