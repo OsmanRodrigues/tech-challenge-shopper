@@ -20,3 +20,18 @@ export type VerifyMeasureRequestDTO = Pick<
 export type VerifyMeasureResponseDTO = {
   success: boolean;
 };
+export type ListMeasureRequestDTO = {
+  customer_code: MeasureRecord['customerCode'];
+  measure_type?: MeasureRecord['type'];
+};
+export type ListMeasureItem = {
+  measure_uuid: string;
+  measure_datetime: string;
+  measure_type: string;
+  has_confirmed: boolean;
+  image_url: string;
+};
+export type ListMeasureResponseDTO = {
+  customer_code: MeasureRecord['customerCode'];
+  measures: ListMeasureItem[];
+};

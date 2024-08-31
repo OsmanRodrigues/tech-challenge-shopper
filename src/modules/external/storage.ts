@@ -6,6 +6,12 @@ import {
 import { googleAIStudioAPIKey } from '../../shared/configs';
 import { FileMIMEType } from '../../shared/constants';
 
+export type GetDBRecordParam<DBRecord = any> = {
+  paramName: keyof DBRecord | number;
+  paramValue: any;
+  recordValueTransformer?: (recordValue: any) => any;
+};
+
 if (!googleAIStudioAPIKey) {
   throw new Error('File manager API key not provided.');
 }
@@ -70,13 +76,9 @@ export const getDBRecord = <DBRecord = any>(key: string | number): DBRecord => {
 
   return db?.[key];
 };
-export const getDBRecordByParam = <DBRecord = Record<string, any>>(
-  params: {
-    paramName: keyof DBRecord | number;
-    paramValue: any;
-    recordValueTransformer?: (recordValue: any) => any;
-  }[]
-): DBRecord[] => {
+export const getDBRecordByParam = async <DBRecord = Record<string, any>>(
+  params: GetDBRecordParam<DBRecord>[]
+): Promise<DBRecord[]> => {
   if (db === null) {
     startStorageServices();
   }

@@ -22,7 +22,7 @@ export const registerMeasureUseCase = async (
 ): Promise<MeasureRegisterResponseDTO> => {
   registerValidator(data);
 
-  const dbSearchRes = getDBRecordByParam<MeasureRecord>([
+  const dbSearchRes = await getDBRecordByParam<MeasureRecord>([
     {
       paramName: 'collectedAt',
       paramValue: new Date(data.measure_datetime).getMonth(),
@@ -31,7 +31,7 @@ export const registerMeasureUseCase = async (
     { paramName: 'type', paramValue: data.measure_type },
   ]);
 
-  if (!!dbSearchRes.length && !!dbSearchRes[0].id) {
+  if (!!dbSearchRes?.length && !!dbSearchRes[0].id) {
     throw genCustomError(
       'DOUBLE_REPORT',
       'Já existe uma leitura para este tipo no mês atual.',
