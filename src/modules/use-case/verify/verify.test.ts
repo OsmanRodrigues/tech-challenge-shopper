@@ -5,6 +5,7 @@ import { startStorageServices } from '../../external/storage';
 import { startAIServices } from '../../external/ai';
 
 import type { VerifyMeasureRequestDTO } from 'src/modules/model/dto';
+import { ErrorCode } from 'src/shared/constants';
 
 describe('Use case: verify measure', undefined, () => {
   before(() => {
@@ -21,5 +22,20 @@ describe('Use case: verify measure', undefined, () => {
 
     assert.ok(verifyResponse);
     assert.ok(verifyResponse.success);
+  });
+  it('Should throw invalid data error once request payload has wrong data', async () => {
+    const wrongDataPayload = {
+      confirmed_value: '1234',
+      measure_uuid: 'abc1234',
+    };
+    try {
+      const verifyResponse: any = await verifyMeasureUseCase(
+        wrongDataPayload as any
+      );
+    } catch (err: any) {
+      assert.deepStrictEqual(err.status, 400);
+      assert.deepStrictEqual(err.error_code, ErrorCode.INVALID_DATA);
+      assert.ok(err.error_description);
+    }
   });
 });
