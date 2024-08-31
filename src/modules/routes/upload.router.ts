@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerHandler } from '../use-case/register';
+import { registerHandler } from '../use-case/register/register';
 
 const uploadRouter = express.Router();
 

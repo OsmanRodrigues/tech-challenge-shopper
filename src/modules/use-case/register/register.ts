@@ -1,16 +1,20 @@
 import { randomUUID } from 'node:crypto';
-import { getDBRecordByParam, setDBItem, uploadFile } from '../external/storage';
-import { genContent } from '../external/ai';
-import { getMeasurePrompt } from '../../shared/prompts';
-import { genCustomError } from '../../shared/utils/error.utils';
-import { FileMIMEType } from '../../shared/constants';
+import {
+  getDBRecordByParam,
+  setDBItem,
+  uploadFile,
+} from '../../external/storage';
+import { genContent } from '../../external/ai';
+import { getMeasurePrompt } from '../../../shared/prompts';
+import { genCustomError } from '../../../shared/utils/error.utils';
+import { FileMIMEType } from '../../../shared/constants';
 import { z, type ZodError } from 'zod';
 
-import { MeasureType, type MeasureRecord } from '../model/measure.entity';
+import { MeasureType, type MeasureRecord } from '../../model/measure.entity';
 import type {
   MeasureRegisterRequestDTO,
   MeasureRegisterResponseDTO,
-} from '../model/dto';
+} from '../../model/dto';
 import type { RequestHandler } from 'express';
 
 export const registerMeasureUseCase = async (

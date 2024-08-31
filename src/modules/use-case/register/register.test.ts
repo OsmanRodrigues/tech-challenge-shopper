@@ -2,11 +2,11 @@ import { it, describe, before, todo } from 'node:test';
 import assert from 'node:assert';
 import fs from 'node:fs';
 import { registerMeasureUseCase } from './register';
-import { startStorageServices } from '../external/storage';
-import { startAIServices } from '../external/ai';
-import { ErrorCode } from '../../shared/constants';
+import { startStorageServices } from '../../external/storage';
+import { startAIServices } from '../../external/ai';
+import { ErrorCode } from '../../../shared/constants';
 
-import type { MeasureRegisterRequestDTO } from '../model/dto';
+import type { MeasureRegisterRequestDTO } from '../../model/dto';
 
 //NOTE comment test image file or base64 for select base64 mock consume
 // const base64Mock = fs.readFileSync('test-sample.jpeg', 'base64');
