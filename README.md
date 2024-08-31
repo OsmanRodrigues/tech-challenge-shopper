@@ -109,6 +109,84 @@ There are these resources available:
     }  
   ```
 
+* #### [PATCH]/confirm
+  ```ts
+    description — verify a measure record and confirm and/or fix your registered value;
+    request data — {
+        measure_uuid: string
+        confirmed_value: number 
+    } 
+  ```
+  Response data
+  ```ts
+    STATUS CODE - 200
+    {
+        success: true
+    } 
+  ```
+  Invalid data exception response
+  ```ts
+    STATUS CODE - 400
+    {
+        error_code: "INVALID_DATA"
+        error_description: "Os dados fornecidos no corpo da requisição são inválidos"
+    } 
+  ```
+  Not found data exception response
+  ```ts
+    STATUS CODE - 404
+    {
+        error_code: "MEASURE_NOT_FOUND"
+        error_description: "Leitura não encontrada"
+    } 
+  ```
+  Confirmation duplicate data exception response
+  ```ts
+    STATUS CODE - 409
+    {
+        error_code: "CONFIRMATION_DUPLICATE"
+        error_description: "Leitura já confirmada"
+    } 
+  ```
+* #### [GET]/:customer_code/list
+  ```ts
+    description — list all measures given a customer code and/or a measure type;
+    path param — customer_code (eg.: [GET]/1234/list)
+    query param — measure_type: WATER | GAS  (eg.: [GET]/1234/list?measure_type=WATER)  
+  ```
+  Response data
+  ```ts
+    STATUS CODE - 200
+    {
+      customer_code: string,
+      measures: [
+        {
+          measure_uuid: UUID string
+          measure_datetime: ISO datetime string
+          measure_type: WATER | GAS
+          has_confirmed: boolean
+          image_url: http url string
+        }
+      ]
+    }
+  ```
+  Invalid data exception response
+  ```ts
+    STATUS CODE - 400
+    {
+        error_code: "INVALID_TYPE"
+        error_description: "Parâmetro measure type diferente de WATER ou GAS"
+    } 
+  ```
+  Not found data exception response
+  ```ts
+    STATUS CODE - 404
+    {
+        error_code: "MEASURE_NOT_FOUND"
+        error_description: "Nenhum registro encontrado"
+    } 
+  ```
+
 ## License
 MeasurAI is released under the MIT License.
 
