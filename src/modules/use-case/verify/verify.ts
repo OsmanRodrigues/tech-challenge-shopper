@@ -19,12 +19,16 @@ export const verifyMeasureUseCase = async (
   if (!measureRecord?.id)
     throw genCustomError('MEASURE_NOT_FOUND', 'Leitura não encontrada', 404);
 
-  if (
-    !measureRecord.measureValueStatus ||
-    measureRecord.measureValueStatus === 'INVALID'
-  ) {
-    if (measureRecord.value !== data.confirmed_value)
+  if (measureRecord.measureValueStatus === 'VALID') {
+    throw genCustomError(
+      'CONFIRMATION_DUPLICATE',
+      'Leitura já confirmada',
+      409
+    );
+  } else {
+    if (measureRecord?.value !== data.confirmed_value) {
       measureRecord.value = data.confirmed_value;
+    }
 
     measureRecord.measureValueStatus = 'VALID';
     await setDBRecord(measureRecord.id, measureRecord);

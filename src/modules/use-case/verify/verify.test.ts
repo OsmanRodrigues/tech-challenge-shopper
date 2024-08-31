@@ -53,4 +53,19 @@ describe('Use case: verify measure', undefined, () => {
       assert.ok(err.error_description);
     }
   });
+  it('Should throw confirmation duplicate error once a measure already verified', async () => {
+    const dataPayload = {
+      confirmed_value: 12345,
+      measure_uuid: 'dae46f67-f39f-40f4-bdff-eb1cee28b03f',
+    };
+    try {
+      const verifyResponse: any = await verifyMeasureUseCase(
+        dataPayload as any
+      );
+    } catch (err: any) {
+      assert.deepStrictEqual(err.status, 409);
+      assert.deepStrictEqual(err.error_code, ErrorCode.CONFIRMATION_DUPLICATE);
+      assert.ok(err.error_description);
+    }
+  });
 });
