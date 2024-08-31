@@ -76,28 +76,62 @@ export const getDBRecord = <DBRecord = any>(key: string | number): DBRecord => {
 
   return db?.[key];
 };
-export const getDBRecordByParam = async <DBRecord = Record<string, any>>(
-  params: GetDBRecordParam<DBRecord>[]
-): Promise<DBRecord[]> => {
+export const getDBRecordByParam = async <
+  DBRecord = Record<string, any>,
+  MappedRecord = Record<string, any>
+>(
+  params: GetDBRecordParam<DBRecord>[],
+  options?: {
+    valueMap?: Partial<Record<keyof DBRecord, string>>;
+    valueMapTransformer?: Partial<Record<keyof DBRecord, (value: any) => any>>;
+  }
+): Promise<MappedRecord[]> => {
   if (db === null) {
     startStorageServices();
   }
 
   const dbRecords = Object.values(db!);
+  const verifyParamsMatch = (
+    currentParams: typeof params,
+    currentRecord: any
+  ) =>
+    currentParams.every((param) => {
+      const recordValue = currentRecord?.[param.paramName];
+
+      return (
+        !!recordValue &&
+        (!!param.recordValueTransformer
+          ? param.recordValueTransformer(recordValue) === param.paramValue
+          : recordValue === param.paramValue)
+      );
+    });
 
   if (dbRecords.length) {
-    return dbRecords.filter((record) =>
-      params.every((param) => {
-        const recordValue = record?.[param.paramName];
+    if (!!options?.valueMap) {
+      return dbRecords.flatMap((record) => {
+        const hasParamsMatch = verifyParamsMatch(params, record);
 
-        return (
-          !!recordValue &&
-          (!!param.recordValueTransformer
-            ? param.recordValueTransformer(recordValue) === param.paramValue
-            : recordValue === param.paramValue)
-        );
-      })
-    );
+        if (hasParamsMatch) {
+          const mappedRecord = {} as any;
+
+          for (const key in options.valueMap) {
+            const mappedKey = options.valueMap[key];
+            const valueTransformer = options.valueMapTransformer?.[key];
+            const value = valueTransformer
+              ? valueTransformer(record[key])
+              : record[key];
+
+            mappedRecord[mappedKey] = value;
+          }
+
+          return [mappedRecord];
+        } else {
+          return [];
+        }
+      });
+    }
+
+    return dbRecords.filter((record) => verifyParamsMatch(params, record));
   }
 
   return [];
