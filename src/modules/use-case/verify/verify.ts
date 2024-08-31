@@ -16,6 +16,9 @@ export const verifyMeasureUseCase = async (
 
   const measureRecord = getDBRecord<MeasureRecord>(data.measure_uuid);
 
+  if (!measureRecord?.id)
+    throw genCustomError('MEASURE_NOT_FOUND', 'Leitura não encontrada', 404);
+
   if (
     !measureRecord.measureValueStatus ||
     measureRecord.measureValueStatus === 'INVALID'

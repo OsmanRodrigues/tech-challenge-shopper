@@ -38,4 +38,19 @@ describe('Use case: verify measure', undefined, () => {
       assert.ok(err.error_description);
     }
   });
+  it('Should throw not found error once a measure record not found', async () => {
+    const wrongDataPayload = {
+      confirmed_value: 12345,
+      measure_uuid: '6029812c-3879-410c-a4e7-946d0941d15d',
+    };
+    try {
+      const verifyResponse: any = await verifyMeasureUseCase(
+        wrongDataPayload as any
+      );
+    } catch (err: any) {
+      assert.deepStrictEqual(err.status, 404);
+      assert.deepStrictEqual(err.error_code, ErrorCode.MEASURE_NOT_FOUND);
+      assert.ok(err.error_description);
+    }
+  });
 });
