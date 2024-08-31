@@ -1,15 +1,13 @@
-import { genCustomError } from 'src/shared/utils/error.utils';
+import { requestHandlerWrapper } from '../../../shared/utils/request-handler.utils';
+import { getDBRecord, setDBRecord } from '../../external/storage';
+import { genCustomError } from '../../../shared/utils/error.utils';
+import { z, type ZodError } from 'zod';
+
+import type { MeasureRecord } from '../../model/measure.entity';
 import type {
   VerifyMeasureRequestDTO,
   VerifyMeasureResponseDTO,
 } from '../../model/dto';
-import { z, type ZodError } from 'zod';
-import {
-  getDBRecord,
-  getDBRecordByParam,
-  setDBRecord,
-} from 'src/modules/external/storage';
-import { MeasureRecord } from 'src/modules/model/measure.entity';
 
 export const verifyMeasureUseCase = async (
   data: VerifyMeasureRequestDTO
@@ -33,6 +31,9 @@ export const verifyMeasureUseCase = async (
     success: true,
   };
 };
+export const verifyHandler = requestHandlerWrapper(verifyMeasureUseCase, {
+  withBody: true,
+});
 const verifyValidator = (data: VerifyMeasureRequestDTO) => {
   try {
     const verifyMeasureSchema = z.object({
